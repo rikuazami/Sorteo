@@ -3,65 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <title>Sorteo</title>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
       height: 100%;
+      overflow: hidden;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       background: #f4f6f8;
-      color: #222;
-      padding: 20px;
+      text-align: center;
       box-sizing: border-box;
     }
 
     h1 {
-      margin-bottom: 5px;
-      font-weight: 700;
-      font-size: 32px;
-      color: #333;
+      font-size: 7vw;
+      margin-bottom: 10px;
+      font-weight: bold;
     }
 
     #mensaje {
-      font-size: 20px;
+      font-size: 4.5vw;
       margin-bottom: 20px;
-      height: 28px;
-      color: #555;
       font-style: italic;
-      transition: color 0.3s ease;
+      color: #444;
     }
 
-    .numero {
-      font-size: 20vw; /* Se adapta al ancho de la pantalla */
+    #resultado {
+      font-size: 20vw;
       font-weight: 900;
-      color: #111;
-      margin: 30px 0;
-      opacity: 0;
-      animation: fadeIn 0.5s forwards;
+      color: #1e88e5;
+      margin: 20px 0;
       user-select: none;
-      transition: transform 0.3s ease, color 0.3s ease;
+      transition: transform 0.3s ease;
     }
 
     button {
-      font-size: 20px;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 8px;
+      font-size: 5vw;
+      padding: 10px 30px;
       background-color: #007bff;
       color: white;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
       cursor: pointer;
-      box-shadow: 0 4px 12px rgb(0 123 255 / 0.4);
-      transition: background-color 0.25s ease;
+      transition: background-color 0.3s ease;
     }
 
     button:hover:not(:disabled) {
@@ -71,31 +65,24 @@
     button:disabled {
       background-color: #a0a9b8;
       cursor: not-allowed;
-      box-shadow: none;
     }
 
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-      }
-    }
-
-    @media (max-width: 480px) {
+    @media (min-width: 768px) {
       h1 {
-        font-size: 28px;
+        font-size: 3rem;
       }
 
       #mensaje {
-        font-size: 18px;
+        font-size: 1.5rem;
+      }
+
+      #resultado {
+        font-size: 10rem;
       }
 
       button {
-        font-size: 18px;
-        padding: 10px 24px;
-      }
-
-      .numero {
-        font-size: 25vw;
+        font-size: 1.2rem;
+        padding: 12px 40px;
       }
     }
   </style>
@@ -103,13 +90,13 @@
 <body>
   <h1>Sorteo</h1>
   <div id="mensaje">¡Presiona el botón para sortear!</div>
-  <div class="numero" id="resultado">🎲</div>
+  <div id="resultado">🎲</div>
   <button id="btnSortear">Sortear número</button>
 
   <audio id="audio" src="celebration.mp3"></audio>
 
   <script>
-    (function() {
+    (function () {
       const resultado = document.getElementById('resultado');
       const mensaje = document.getElementById('mensaje');
       const btn = document.getElementById('btnSortear');
@@ -120,29 +107,22 @@
       let primeraVez = true;
 
       function getRandomColor() {
-        const hues = [180, 200, 220, 160, 140];
-        const hue = hues[Math.floor(Math.random() * hues.length)];
-        return `hsl(${hue}, 70%, 50%)`;
-      }
-
-      function getRandomScale() {
-        return (Math.random() * 0.3 + 1).toFixed(2);
+        const colores = ['#007bff', '#ff4081', '#4caf50', '#ff9800'];
+        return colores[Math.floor(Math.random() * colores.length)];
       }
 
       function animarNumeros(numeroFinal) {
         let tiempoTranscurrido = 0;
-
         btn.disabled = true;
         mensaje.textContent = "Buscando número ganador...";
-        mensaje.style.color = '#777';
+        mensaje.style.color = '#666';
 
         return new Promise((resolve) => {
           const animacion = setInterval(() => {
-            const randomNum = Math.floor(Math.random() * 90) + 10;
-            resultado.textContent = randomNum;
+            const n = Math.floor(Math.random() * 90) + 10;
+            resultado.textContent = n;
             resultado.style.color = getRandomColor();
-            resultado.style.transform = `scale(${getRandomScale()})`;
-            resultado.style.opacity = '1';
+            resultado.style.transform = `scale(${1 + Math.random() * 0.3})`;
 
             tiempoTranscurrido += intervalo;
             if (tiempoTranscurrido >= duracionAnimacion) {
@@ -157,28 +137,23 @@
       }
 
       async function sortear() {
-        let numeroFinal = primeraVez ? numeroEspecial : Math.floor(Math.random() * 90) + 10;
+        let numero = primeraVez ? numeroEspecial : Math.floor(Math.random() * 90) + 10;
         if (primeraVez) primeraVez = false;
 
-        await animarNumeros(numeroFinal);
+        await animarNumeros(numero);
 
         mensaje.textContent = "¡Número ganador!";
         mensaje.style.color = '#388e3c';
-
         audio.currentTime = 0;
         audio.play();
 
-        confetti({
-          particleCount: 250,
-          spread: 140,
-          origin: { y: 0.6 }
-        });
+        confetti({ particleCount: 200, spread: 160, origin: { y: 0.6 } });
 
         setTimeout(() => {
           btn.disabled = false;
           resultado.style.transform = 'scale(1)';
           mensaje.textContent = "¡Presiona el botón para sortear!";
-          mensaje.style.color = '#555';
+          mensaje.style.color = '#444';
         }, 4000);
       }
 
@@ -187,4 +162,3 @@
   </script>
 </body>
 </html>
-
