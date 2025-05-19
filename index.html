@@ -2,62 +2,151 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Sorteo</title>
+  <title>Sorteo Profesional</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      padding-top: 50px;
+      padding: 50px 20px;
+      background: #f4f6f8;
+      color: #222;
+    }
+    h1 {
+      margin-bottom: 10px;
+      font-weight: 700;
+      color: #333;
+    }
+    #mensaje {
+      font-size: 22px;
+      margin-bottom: 20px;
+      height: 28px;
+      color: #555;
+      font-style: italic;
+      transition: color 0.3s ease;
     }
     .numero {
-      font-size: 80px;
-      margin: 30px;
+      font-size: 90px;
+      margin: 30px 0;
+      font-weight: 900;
+      color: #111;
+      transition: color 0.3s ease, transform 0.3s ease;
+      opacity: 0;
+      animation: fadeIn 0.5s forwards;
+      user-select: none;
     }
     button {
-      font-size: 20px;
+      font-size: 22px;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgb(0 123 255 / 0.4);
+      transition: background-color 0.25s ease;
+    }
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+    button:disabled {
+      background-color: #a0a9b8;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Sorteo</h1>
+  <h1>Sorteo Profesional</h1>
+  <div id="mensaje">¡Presiona el botón para sortear!</div>
   <div class="numero" id="resultado">🎲</div>
-  <button onclick="sortear()">Sortear número</button>
+  <button id="btnSortear">Sortear número</button>
 
   <audio id="audio" src="celebration.mp3"></audio>
 
   <script>
-    function sortear() {
-      const resultado = document.getElementById("resultado");
-      const audio = document.getElementById("audio");
+    (function() {
+      const resultado = document.getElementById('resultado');
+      const mensaje = document.getElementById('mensaje');
+      const btn = document.getElementById('btnSortear');
+      const audio = document.getElementById('audio');
       const numeroFinal = 42;
-      const duracionAnimacion = 1500; // duración total de la animación en ms
-      const intervalo = 50; // tiempo entre cada número aleatorio en ms
+      const duracionAnimacion = 1800; // ms
+      const intervalo = 60; // ms entre números aleatorios
 
-      let tiempoTranscurrido = 0;
+      function getRandomColor() {
+        // Tonos azules y verdes para un look profesional
+        const hues = [180, 200, 220, 160, 140];
+        const hue = hues[Math.floor(Math.random() * hues.length)];
+        return `hsl(${hue}, 70%, 50%)`;
+      }
 
-      const animacion = setInterval(() => {
-        // Mostrar número aleatorio entre 1 y 100
-        const randomNum = Math.floor(Math.random() * 100) + 1;
-        resultado.textContent = randomNum;
+      function getRandomScale() {
+        // Pequeña variación de tamaño para animar dinamismo
+        return (Math.random() * 0.3 + 1).toFixed(2);
+      }
 
-        tiempoTranscurrido += intervalo;
+      function animarNumeros() {
+        let tiempoTranscurrido = 0;
 
-        if (tiempoTranscurrido >= duracionAnimacion) {
-          clearInterval(animacion);
-          resultado.textContent = numeroFinal;
+        btn.disabled = true;
+        mensaje.textContent = "Buscando número ganador...";
+        mensaje.style.color = '#777';
 
-          audio.play();
+        return new Promise((resolve) => {
+          const animacion = setInterval(() => {
+            // Números entre 10 y 99 (dos dígitos para estética)
+            const randomNum = Math.floor(Math.random() * 90) + 10;
 
-          confetti({
-            particleCount: 200,
-            spread: 120,
-            origin: { y: 0.6 }
-          });
-        }
-      }, intervalo);
-    }
+            resultado.textContent = randomNum;
+            resultado.style.color = getRandomColor();
+            resultado.style.transform = `scale(${getRandomScale()})`;
+
+            tiempoTranscurrido += intervalo;
+            if (tiempoTranscurrido >= duracionAnimacion) {
+              clearInterval(animacion);
+              resolve();
+            }
+          }, intervalo);
+        });
+      }
+
+      async function sortear() {
+        await animarNumeros();
+
+        // Mostrar número final con estilo definido
+        resultado.textContent = numeroFinal;
+        resultado.style.color = '#1e88e5'; // azul intenso fijo
+        resultado.style.transform = 'scale(1.2)';
+        mensaje.textContent = "¡Número ganador!";
+        mensaje.style.color = '#388e3c'; // verde
+
+        audio.currentTime = 0;
+        audio.play();
+
+        confetti({
+          particleCount: 250,
+          spread: 140,
+          origin: { y: 0.6 }
+        });
+
+        // Reactivar botón después de unos segundos para poder volver a jugar
+        setTimeout(() => {
+          btn.disabled = false;
+          resultado.style.transform = 'scale(1)';
+          mensaje.textContent = "¡Presiona el botón para sortear!";
+          mensaje.style.color = '#555';
+        }, 4000);
+      }
+
+      btn.addEventListener('click', sortear);
+    })();
   </script>
 </body>
 </html>
-
