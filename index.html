@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sorteo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .numero {
+      font-size: 80px;
+      margin: 30px;
+    }
+    button {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sorteo</h1>
+  <div class="numero" id="resultado">🎲</div>
+  <button onclick="sortear()">Sortear número</button>
+
+  <audio id="audio" src="celebration.mp3"></audio>
+
+  <script>
+    function sortear() {
+      const numero = Math.floor(Math.random() * 100) + 1;
+      document.getElementById("resultado").textContent = numero;
+
+      const audio = document.getElementById("audio");
+      audio.play();
+
+      // Confeti (básico)
+      for (let i = 0; i < 100; i++) {
+        const confeti = document.createElement("div");
+        confeti.style.position = "fixed";
+        confeti.style.top = Math.random() * window.innerHeight + "px";
+        confeti.style.left = Math.random() * window.innerWidth + "px";
+        confeti.style.width = "10px";
+        confeti.style.height = "10px";
+        confeti.style.background = `hsl(${Math.random()*360}, 100%, 50%)`;
+        confeti.style.zIndex = "9999";
+        document.body.appendChild(confeti);
+        setTimeout(() => confeti.remove(), 2000);
+      }
+    }
+  </script>
+</body>
+</html>
