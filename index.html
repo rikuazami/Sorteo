@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Sorteo</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
@@ -24,22 +24,40 @@
   <div class="numero" id="resultado">🎲</div>
   <button onclick="sortear()">Sortear número</button>
 
-  <audio id="audio" src="celebracion.mp3"></audio>
+  <audio id="audio" src="celebration.mp3"></audio>
 
   <script>
     function sortear() {
-      const numero = 42; // Cambia esto al número que quieras
-      document.getElementById("resultado").textContent = numero;
-
+      const resultado = document.getElementById("resultado");
       const audio = document.getElementById("audio");
-      audio.play();
+      const numeroFinal = 42;
+      const duracionAnimacion = 1500; // duración total de la animación en ms
+      const intervalo = 50; // tiempo entre cada número aleatorio en ms
 
-      confetti({
-        particleCount: 200,
-        spread: 120,
-        origin: { y: 0.6 }
-      });
+      let tiempoTranscurrido = 0;
+
+      const animacion = setInterval(() => {
+        // Mostrar número aleatorio entre 1 y 100
+        const randomNum = Math.floor(Math.random() * 100) + 1;
+        resultado.textContent = randomNum;
+
+        tiempoTranscurrido += intervalo;
+
+        if (tiempoTranscurrido >= duracionAnimacion) {
+          clearInterval(animacion);
+          resultado.textContent = numeroFinal;
+
+          audio.play();
+
+          confetti({
+            particleCount: 200,
+            spread: 120,
+            origin: { y: 0.6 }
+          });
+        }
+      }, intervalo);
     }
   </script>
 </body>
 </html>
+
