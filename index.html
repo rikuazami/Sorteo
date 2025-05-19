@@ -27,26 +27,32 @@
 
   <script>
     function sortear() {
-      const numero = Math.floor(Math.random() * 100) + 1;
+      const numero = 42;
       document.getElementById("resultado").textContent = numero;
 
       const audio = document.getElementById("audio");
       audio.play();
 
-      // Confeti (básico)
-      for (let i = 0; i < 100; i++) {
-        const confeti = document.createElement("div");
-        confeti.style.position = "fixed";
-        confeti.style.top = Math.random() * window.innerHeight + "px";
-        confeti.style.left = Math.random() * window.innerWidth + "px";
-        confeti.style.width = "10px";
-        confeti.style.height = "10px";
-        confeti.style.background = `hsl(${Math.random()*360}, 100%, 50%)`;
-        confeti.style.zIndex = "9999";
-        document.body.appendChild(confeti);
-        setTimeout(() => confeti.remove(), 2000);
-      }
-    }
+      <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+  function sortear() {
+    const numero = 42; // Número forzado
+
+    document.getElementById("resultado").textContent = numero;
+
+    // Sonido
+    const audio = document.getElementById("audio");
+    audio.play();
+
+    // Confeti animado
+    confetti({
+      particleCount: 200,
+      spread: 120,
+      origin: { y: 0.6 }
+    });
+  }
+</script>
+
   </script>
 </body>
 </html>
